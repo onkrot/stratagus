@@ -673,11 +673,6 @@ static void LoadMap(const std::string &filename, CMap &map)
 			|| !strcmp(tmp, ".smp.bz2")
 #endif
 		   ) {
-			if (map.Info.Filename.empty()) {
-				// The map info hasn't been loaded yet => do it now
-				LoadStratagusMapInfo(filename);
-			}
-			Assert(!map.Info.Filename.empty());
 			map.Create();
 			LoadStratagusMap(filename, map.Info.Filename);
 			return;
@@ -875,22 +870,15 @@ void CreateGame(const std::string &filename, CMap *map)
 		CommandLog(NULL, NoUnitP, FlushCommands, -1, -1, NoUnitP, NULL, -1);
 		return;
 	}
+	
 
 	InitPlayers();
-
-	if (IsNetworkGame()) {
-		// if is a network game, it is necessary to reinitialize the syncrand
-		// variables before beginning to load the map, due to random map
-		// generation
-		SyncHash = 0;
-		InitSyncRand();
-	}
 
 	if (Map.Info.Filename.empty() && !filename.empty()) {
 		const std::string path = LibraryFileName(filename.c_str());
 
 		if (strcasestr(filename.c_str(), ".smp")) {
-			LuaLoadFile(path);
+			LoadStratagusMapInfo(path);
 		}
 	}
 
@@ -916,11 +904,6 @@ void CreateGame(const std::string &filename, CMap *map)
 		ApplyUpgrades();
 	}
 	CclCommand("if (MapLoaded ~= nil) then MapLoaded() end");
-
-	GameCycle = 0;
-	FastForwardCycle = 0;
-	SyncHash = 0;
-	InitSyncRand();
 
 	if (IsNetworkGame()) { // Prepare network play
 		NetworkOnStartGame();
@@ -985,70 +968,20 @@ void CreateGame(const std::string &filename, CMap *map)
 		}
 	}
 
-	//
-	// Graphic part
-	//
-	SetPlayersPalette();
-	LoadIcons();
+	InitModules();
+	LoadModules();
 
-	LoadCursors(PlayerRaces.Name[ThisPlayer->Race]);
+	SetPlayersPalette();
+
 	UnitUnderCursor = NoUnitP;
 
-	InitMissileTypes();
-#ifndef DYNAMIC_LOAD
-	LoadMissileSprites();
-#endif
-	InitConstructions();
-	LoadConstructions();
-	LoadUnitTypes();
-	LoadDecorations();
-
-	InitUserInterface();
-	UI.Load();
-
-	Map.Init();
-	UI.Minimap.Create();
 	PreprocessMap();
-
-	//
-	// Sound part
-	//
-	LoadUnitSounds();
-	MapUnitSounds();
-	if (SoundEnabled()) {
-		InitSoundClient();
-	}
-
-	//
-	// Spells
-	//
-	InitSpells();
 
 	//
 	// Init players?
 	//
 	DebugPlayers();
 	PlayersInitAi();
-
-	//
-	// Upgrades
-	//
-	InitUpgrades();
-
-	//
-	// Dependencies
-	//
-	InitDependencies();
-
-	//
-	// Buttons (botpanel)
-	//
-	InitButtons();
-
-	//
-	// Triggers
-	//
-	InitTriggers();
 
 	SetDefaultTextColors(UI.NormalFontColor, UI.ReverseFontColor);
 

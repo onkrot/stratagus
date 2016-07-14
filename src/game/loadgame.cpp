@@ -124,15 +124,10 @@ void InitModules()
 	InitSyncRand();
 	InitVideoCursors();
 	InitUserInterface();
-	InitPlayers();
 	InitMissileTypes();
 	InitMissiles();
 	InitConstructions();
 
-	// LUDO : 0 = don't reset player stats ( units level , upgrades, ... ) !
-	InitUnitTypes(0);
-
-	InitUnits();
 	InitSpells();
 	InitUpgrades();
 	InitDependencies();
@@ -204,6 +199,7 @@ void LoadGame(const std::string &filename)
 
 	LuaGarbageCollect();
 	InitUnitTypes(1);
+	InitPlayers();
 	LuaLoadFile(filename);
 	LuaGarbageCollect();
 
