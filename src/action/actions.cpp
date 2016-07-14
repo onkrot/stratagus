@@ -448,7 +448,7 @@ static void DumpUnitInfo(CUnit &unit)
 	}
 
 	fprintf(logf, "%lu: ", GameCycle);
-	fprintf(logf, "%d %s %d P%d Refs %d: %X %d,%d %d,%d\n",
+	fprintf(logf, "%d %s %d P%d Refs %u: %X %u,%d %d,%d\n",
 			UnitNumber(unit), unit.Type ? unit.Type->Ident.c_str() : "unit-killed",
 			!unit.Orders.empty() ? unit.CurrentAction() : -1,
 			unit.Player ? unit.Player->Index : -1, unit.Refs, SyncRandSeed,

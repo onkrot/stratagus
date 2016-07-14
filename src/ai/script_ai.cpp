@@ -1105,7 +1105,7 @@ static int CclAiDump(lua_State *l)
 			printf("Building queue:\n");
 			for (size_t i = 0; i < aip.Ai->UnitTypeBuilt.size(); ++i) {
 				const AiBuildQueue &queue = aip.Ai->UnitTypeBuilt[i];
-				printf("%s(%d/%d) ", queue.Type->Ident.c_str(), queue.Made, queue.Want);
+				printf("%s(%u/%u) ", queue.Type->Ident.c_str(), queue.Made, queue.Want);
 			}
 			printf("\n");
 
